@@ -1,5 +1,1 @@
-{
-  "rewrites": [
-    { "source": "/r/:code", "destination": "/api/redirect?code=:code" }
-  ]
-}
+{"rewrites":[{"source":"/r/:code","destination":"/api/go?code=:code"},{"source":"/ativar","destination":"/ativar/index.html"},{"source":"/admin","destination":"/admin/index.html"}]}

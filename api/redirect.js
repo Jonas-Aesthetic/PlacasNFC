@@ -71,7 +71,7 @@ function page(res, status, title, msg) {
   res.statusCode = status;
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.setHeader('Cache-Control', 'no-store');
-  res.end(`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)}</title><style>body{font-family:system-ui,sans-serif;background:#111827;color:#f9fafb;display:flex;min-height:100vh;align-items:center;justify-content:center;margin:0;padding:24px;text-align:center}main{max-width:420px}h1{font-size:22px;margin:0 0 12px}p{color:#d1d5db;line-height:1.5}</style></head><body><main><h1>${esc(title)}</h1><p>${msg}</p></main></body></html>`);
+  res.end(`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)}</title><style>body{font-family:system-ui,sans-serif;background:#fff;color:#0f172a;display:flex;min-height:100vh;align-items:center;justify-content:center;margin:0;padding:24px;text-align:center}main{max-width:420px}h1{font-size:22px;margin:0 0 12px}p{color:#64748b;line-height:1.5}</style></head><body><main><h1>${esc(title)}</h1><p>${msg}</p></main></body></html>`);
 }
 
 module.exports = async (req, res) => {
@@ -91,7 +91,7 @@ module.exports = async (req, res) => {
       const nome = ei >= 0 ? String(row[ei] || '').trim() : '';
       res.setHeader('X-Robots-Tag', 'noindex');
       return page(res, 200, 'Consulta da placa',
-        `Código: <b>${esc(code)}</b><br>Status: <b>${dest ? 'ativa' : 'livre (sem destino)'}</b><br>Estabelecimento: <b>${nome ? esc(nome) : '—'}</b><br>Destino: ${dest ? `<a style="color:#93c5fd" href="${esc(dest)}">${esc(dest)}</a>` : '—'}`);
+        `Código: <b>${esc(code)}</b><br>Status: <b>${dest ? 'ativa' : 'livre (sem destino)'}</b><br>Estabelecimento: <b>${nome ? esc(nome) : '—'}</b><br>Destino: ${dest ? `<a style="color:#2563eb" href="${esc(dest)}">${esc(dest)}</a>` : '—'}`);
     }
     if (!dest) return page(res, 200, 'Placa ainda não ativada', `Esta placa (<b>${esc(code)}</b>) ainda não foi vinculada a um estabelecimento.`);
     res.statusCode = 302;

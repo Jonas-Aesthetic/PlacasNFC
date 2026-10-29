@@ -1,38 +1,33 @@
-# Redirecionador das placas NFC
+# VyntraTags — guia de instalação (Vercel + Upstash Redis)
 
-Cada placa tem um link único (`https://placa-nfc.vercel.app/r/CODIGO`). Este projeto leva a pessoa
-para o destino que estiver na planilha. Trocar o destino = editar uma célula, sem reimprimir nada.
+## O que tem nesta pasta
+- `api/` — go.js (link das placas), ativar.js (ativação pelo cliente), admin.js (painel), redirect.js (reserva via planilha)
+- `lib/db.js` — conexão com o Redis
+- `data/placas.json` — as 200 placas (códigos únicos)
+- `public/` — site (`/`), painel (`/admin`) e ativação do cliente (`/ativar`)
+- `vercel.json` — rotas (`/r/CODIGO`, `/admin`, `/ativar`)
 
-## Passo a passo (tudo gratuito)
+## Instalação (nesta ordem)
+1. **GitHub**: suba TODO o conteúdo desta pasta na raiz do repositório (as pastas `api`, `lib`, `data`, `public` e os arquivos `vercel.json` e `package.json` devem aparecer na primeira tela do repositório).
+2. **Vercel**: projeto `placa-nfc` (endereço `placa-nfc-rho.vercel.app`) ligado a esse repositório.
+3. **Banco de dados**: Vercel > Storage > Create Database > **Upstash Redis** (plano gratuito) > Connect Project. As variáveis `KV_REST_API_URL` e `KV_REST_API_TOKEN` são criadas sozinhas.
+4. **Variável de senha**: Settings > Environment Variables > crie `INFO_KEY` com a senha do painel (letras e números, sem espaços). Marque Production, Preview e Development.
+5. **Redeploy**: Deployments > ⋯ > Redeploy (obrigatório depois de criar o banco e as variáveis).
+6. **Importar placas**: abra `/admin`, entre com a senha (`INFO_KEY`) e clique em **Importar as 200 placas**.
 
-1. **Planilha**: envie `Planilha_Placas_NFC.xlsx` ao Google Drive e abra com o Google Planilhas.
-2. **Publicar só a aba "Publicar"**: Arquivo > Compartilhar > Publicar na Web > escolha a aba
-   **Publicar** e o formato **CSV** > Publicar. Copie o link gerado.
-   (A aba "Placas", com os nomes dos estabelecimentos, continua privada.)
-3. **GitHub**: crie um repositório e envie o conteúdo desta pasta.
-4. **Vercel**: Add New > Project > importe o repositório.
-   - Nome do projeto: **placa-nfc** (o endereço precisa ser `placa-nfc.vercel.app`, pois ele já está dentro dos QR Codes).
-   - Em Environment Variables, crie `SHEET_CSV_URL` com o link do passo 2.
-   - Crie também `INFO_KEY` com uma senha sua (ex.: letras e números, sem espaços). Ela libera o link de consulta.
-   - Deploy.
-5. **Teste**: abra `https://placa-nfc.vercel.app/r/` + qualquer código da planilha.
-   Deve aparecer "Placa ainda não ativada".
+## Teste antes de vender
+1. Em **Pedidos e PINs**, crie um pedido de teste (1 placa) e anote o PIN.
+2. Abra `/r/CODIGO` de uma placa livre: deve ir para `/ativar`.
+3. Digite o PIN, escolha o uso e ative. Abra `/r/CODIGO` de novo: deve redirecionar.
+4. No painel, a placa deve aparecer como ativa/em uso, com a leitura contada.
 
-## Consultar uma placa já ativada
+## Uso diário
+- Venda: crie o pedido, imprima o cartão com o PIN e envie na caixa.
+- Novas placas: peça o lote e use **Importar lote** (arquivo `codigo,modelo`).
+- Placas alteradas por clientes aparecem com "revisar"; você pode bloquear qualquer placa.
 
-Abra `https://placa-nfc.vercel.app/r/CODIGO?info=SUA_CHAVE` (SUA_CHAVE = valor de `INFO_KEY`).
-Aparecem o código, o status, o estabelecimento e o destino. Com a chave errada ou sem ela, o link
-funciona normalmente e redireciona, sem mostrar nada.
-Dica: digite a chave na célula L2 da aba "Placas"; a coluna J monta o link de consulta de cada placa.
-Atenção: a aba "Publicar" agora inclui o nome do estabelecimento. O link da publicação na web não é
-listado, mas quem o tiver consegue ler a aba. Não compartilhe esse link.
-
-## Ativar uma placa
-
-Na aba **Placas**, preencha a coluna **Destino** (link do Google Avaliações, Instagram, etc.) e o
-**Estabelecimento**. Em até cerca de 1 minuto a placa passa a redirecionar.
-
-## Se o nome `placa-nfc` já estiver em uso na Vercel
-
-Escolha outro nome e peça para gerar os QR Codes e PDFs de novo com o novo endereço.
-Os códigos continuam os mesmos.
+## Se algo falhar
+- 404 em tudo: os arquivos não estão na raiz do repositório (ou ajuste Settings > General > Root Directory).
+- "Indisponível" em /ativar ou "Falta conectar o banco" no painel: Redis não conectado ou falta Redeploy.
+- "INFO_KEY não configurada": crie a variável e faça Redeploy.
+- A variável `SHEET_CSV_URL` (planilha) é opcional e só serve como reserva quando não há Redis.
